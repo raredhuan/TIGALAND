@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TIGA LAND — BM001: Kenali Huruf (L1–L5)</title>
+  <style>
+    :root {
+      --tl-purple: #6B58A5;
+      --tl-orange: #F2A45A;
+      --tl-teal: #62B9A5;
+      --tl-yellow: #F5D56B;
+      --tl-pink: #F3A5AD;
+      --tl-cream: #FFF5E6;
+      --tl-navy: #36415D;
+      --tl-green: #B9D98C;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--tl-cream);
+      font-family: "Trebuchet MS", "Comic Sans MS", "Segoe UI", system-ui, -apple-system, sans-serif;
+      color: var(--tl-navy);
+      overflow: hidden;
+    }
+
+    #game-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #FFFDF9 0%, #FFF5E6 75%, #FDEBD0 100%);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: manipulation;
+    }
+
+    #overlay-toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: var(--tl-navy);
+      color: #FFFFFF;
+      padding: 12px 24px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 8px 20px rgba(54, 65, 93, 0.25);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 50;
+      pointer-events: none;
+      text-align: center;
+      max-width: 90vw;
+    }
+
+    #overlay-toast.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-wrapper">
+    <canvas id="tiga-canvas"></canvas>
+  </div>
+  <div id="overlay-toast" role="status" aria-live="polite"></div>
+
+  <script>
+    /**
+     * ============================================================================
+     * BM001: KENALI HURUF (5 COGNITIVE LEVELS, 50 QUESTIONS)
+     * ============================================================================
+     */
+    const GAME_DATA = {
+      product: "TIGA LAND",
+      schemaVersion: 2,
+      gameId: "BM001",
+      title: "Kenali Huruf",
+      category: "Bahasa Melayu",
+      subcategory: "Prabacaan & Kenal Huruf",
+      ageRange: "4-7",
+      pointsPerQuestion: 10,
+      levels: [
+        {
+          id: "L1",
+          code: "L1",
+          name: "Explorer",
+          label: "Tahap 1: Explorer",
+          desc: "Kenal huruf besar A – J",
+          color: "#62B9A5",
+          shadow: "#459683",
+          questions: [
+            { id: "BM001_L1_Q01", prompt: "Pilih huruf A", display: null, answer: "A", distractors: ["B", "D", "H"] },
+            { id: "BM001_L1_Q02", prompt: "Pilih huruf B", display: null, answer: "B", distractors: ["D", "P", "R"] },
+            { id: "BM001_L1_Q03", prompt: "Pilih huruf C", display: null, answer: "C", distractors: ["G", "O", "D"] },
+            { id: "BM001_L1_Q04", prompt: "Pilih huruf D", display: null, answer: "D", distractors: ["B", "O", "P"] },
+            { id: "BM001_L1_Q05", prompt: "Pilih huruf E", display: null, answer: "E", distractors: ["F", "B", "H"] },
+            { id: "BM001_L1_Q06", prompt: "Pilih huruf F", display: null, answer: "F", distractors: ["E", "P", "T"] },
+            { id: "BM001_L1_Q07", prompt: "Pilih huruf G", display: null, answer: "G", distractors: ["C", "O", "Q"] },
+            { id: "BM001_L1_Q08", prompt: "Pilih huruf H", display: null, answer: "H", distractors: ["A", "N", "M"] },
+            { id: "BM001_L1_Q09", prompt: "Pilih huruf I", display: null, answer: "I", distractors: ["L", "T", "J"] },
+            { id: "BM001_L1_Q10", prompt: "Pilih huruf J", display: null, answer: "J", distractors: ["I", "L", "U"] }
+          ]
+        },
+        {
+          id: "L2",
+          code: "L2",
+          name: "Beginner",
+          label: "Tahap 2: Beginner",
+          desc: "Kenal huruf besar K – Z",
+          color: "#F2A45A",
+          shadow: "#D68438",
+          questions: [
+            { id: "BM001_L2_Q01", prompt: "Pilih huruf K", display: null, answer: "K", distractors: ["H", "R", "X"] },
+            { id: "BM001_L2_Q02", prompt: "Pilih huruf L", display: null, answer: "L", distractors: ["I", "T", "E"] },
+            { id: "BM001_L2_Q03", prompt: "Pilih huruf M", display: null, answer: "M", distractors: ["N", "W", "H"] },
+            { id: "BM001_L2_Q04", prompt: "Pilih huruf N", display: null, answer: "N", distractors: ["M", "H", "Z"] },
+            { id: "BM001_L2_Q05", prompt: "Pilih huruf P", display: null, answer: "P", distractors: ["B", "R", "D"] },
+            { id: "BM001_L2_Q06", prompt: "Pilih huruf R", display: null, answer: "R", distractors: ["P", "B", "K"] },
+            { id: "BM001_L2_Q07", prompt: "Pilih huruf S", display: null, answer: "S", distractors: ["Z", "C", "G"] },
+            { id: "BM001_L2_Q08", prompt: "Pilih huruf T", display: null, answer: "T", distractors: ["I", "L", "F"] },
+            { id: "BM001_L2_Q09", prompt: "Pilih huruf W", display: null, answer: "W", distractors: ["M", "V", "U"] },
+            { id: "BM001_L2_Q10", prompt: "Pilih huruf Z", display: null, answer: "Z", distractors: ["S", "N", "X"] }
+          ]
+        },
+        {
+          id: "L3",
+          code: "L3",
+          name: "Builder",
+          label: "Tahap 3: Builder",
+          desc: "Padankan huruf besar & huruf kecil",
+          color: "#6B58A5",
+          shadow: "#524185",
+          questions: [
+            { id: "BM001_L3_Q01", prompt: "Cari huruf kecil bagi A", display: "A", answer: "a", distractors: ["e", "o", "c"] },
+            { id: "BM001_L3_Q02", prompt: "Cari huruf kecil bagi B", display: "B", answer: "b", distractors: ["d", "p", "h"] },
+            { id: "BM001_L3_Q03", prompt: "Cari huruf kecil bagi D", display: "D", answer: "d", distractors: ["b", "p", "q"] },
+            { id: "BM001_L3_Q04", prompt: "Cari huruf kecil bagi E", display: "E", answer: "e", distractors: ["c", "a", "o"] },
+            { id: "BM001_L3_Q05", prompt: "Cari huruf kecil bagi G", display: "G", answer: "g", distractors: ["q", "p", "y"] },
+            { id: "BM001_L3_Q06", prompt: "Cari huruf kecil bagi H", display: "H", answer: "h", distractors: ["n", "b", "k"] },
+            { id: "BM001_L3_Q07", prompt: "Cari huruf kecil bagi M", display: "M", answer: "m", distractors: ["n", "w", "u"] },
+            { id: "BM001_L3_Q08", prompt: "Cari huruf kecil bagi N", display: "N", answer: "n", distractors: ["m", "u", "r"] },
+            { id: "BM001_L3_Q09", prompt: "Cari huruf kecil bagi Q", display: "Q", answer: "q", distractors: ["p", "g", "d"] },
+            { id: "BM001_L3_Q10", prompt: "Cari huruf kecil bagi R", display: "R", answer: "r", distractors: ["n", "i", "t"] }
+          ]
+        },
+        {
+          id: "L4",
+          code: "L4",
+          name: "Challenger",
+          label: "Tahap 4: Challenger",
+          desc: "Huruf awal perkataan mudah",
+          color: "#F3A5AD",
+          shadow: "#D47B84",
+          questions: [
+            { id: "BM001_L4_Q01", prompt: "Huruf awal bagi Ayam?", display: "🐔 AYAM", answer: "A", distractors: ["E", "I", "O"] },
+            { id: "BM001_L4_Q02", prompt: "Huruf awal bagi Bola?", display: "⚽ BOLA", answer: "B", distractors: ["D", "P", "R"] },
+            { id: "BM001_L4_Q03", prompt: "Huruf awal bagi Cawan?", display: "☕ CAWAN", answer: "C", distractors: ["G", "K", "S"] },
+            { id: "BM001_L4_Q04", prompt: "Huruf awal bagi Daun?", display: "🍃 DAUN", answer: "D", distractors: ["B", "T", "P"] },
+            { id: "BM001_L4_Q05", prompt: "Huruf awal bagi Epal?", display: "🍎 EPAL", answer: "E", distractors: ["A", "I", "U"] },
+            { id: "BM001_L4_Q06", prompt: "Huruf awal bagi Gajah?", display: "🐘 GAJAH", answer: "G", distractors: ["C", "J", "K"] },
+            { id: "BM001_L4_Q07", prompt: "Huruf awal bagi Ikan?", display: "🐟 IKAN", answer: "I", distractors: ["E", "A", "L"] },
+            { id: "BM001_L4_Q08", prompt: "Huruf awal bagi Kucing?", display: "🐱 KUCING", answer: "K", distractors: ["C", "G", "T"] },
+            { id: "BM001_L4_Q09", prompt: "Huruf awal bagi Matahari?", display: "☀️ MATAHARI", answer: "M", distractors: ["N", "W", "B"] },
+            { id: "BM001_L4_Q10", prompt: "Huruf awal bagi Rumah?", display: "🏠 RUMAH", answer: "R", distractors: ["B", "P", "L"] }
+          ]
+        },
+        {
+          id: "L5",
+          code: "L5",
+          name: "Master",
+          label: "Tahap 5: Master",
+          desc: "Bezakan huruf seiras & urutan abjad",
+          color: "#8EB55B",
+          shadow: "#6D913F",
+          questions: [
+            { id: "BM001_L5_Q01", prompt: "Pilih huruf kecil b (bukan d atau p)", display: "b", answer: "b", distractors: ["d", "p", "q"] },
+            { id: "BM001_L5_Q02", prompt: "Pilih huruf kecil d (bukan b atau q)", display: "d", answer: "d", distractors: ["b", "q", "p"] },
+            { id: "BM001_L5_Q03", prompt: "Pilih huruf kecil p (bukan q atau b)", display: "p", answer: "p", distractors: ["q", "b", "d"] },
+            { id: "BM001_L5_Q04", prompt: "Pilih huruf kecil q (bukan p atau g)", display: "q", answer: "q", distractors: ["p", "g", "d"] },
+            { id: "BM001_L5_Q05", prompt: "Lengkapkan urutan: A, B, __, D", display: "A  B  ?  D", answer: "C", distractors: ["E", "G", "O"] },
+            { id: "BM001_L5_Q06", prompt: "Lengkapkan urutan: F, G, __, I", display: "F  G  ?  I", answer: "H", distractors: ["J", "E", "K"] },
+            { id: "BM001_L5_Q07", prompt: "Lengkapkan urutan: K, L, __, N", display: "K  L  ?  N", answer: "M", distractors: ["W", "O", "H"] },
+            { id: "BM001_L5_Q08", prompt: "Lengkapkan urutan: P, Q, __, S", display: "P  Q  ?  S", answer: "R", distractors: ["T", "B", "K"] },
+            { id: "BM001_L5_Q09", prompt: "Lengkapkan urutan: U, V, __, X", display: "U  V  ?  X", answer: "W", distractors: ["M", "Y", "Z"] },
+            { id: "BM001_L5_Q10", prompt: "Lengkapkan urutan: W, X, __, Z", display: "W  X  ?  Z", answer: "Y", distractors: ["V", "U", "T"] }
+          ]
+        }
+      ]
+    };
+
+    const BRAND = {
+      purple: "#6B58A5",
+      purpleDark: "#524185",
+      orange: "#F2A45A",
+      orangeDark: "#D68438",
+      teal: "#62B9A5",
+      tealDark: "#459683",
+      yellow: "#F5D56B",
+      yellowDark: "#D8B342",
+      pink: "#F3A5AD",
+      pinkDark: "#D47B84",
+      cream: "#FFF5E6",
+      navy: "#36415D",
+      green: "#B9D98C",
+      greenDark: "#8EB55B",
+      cardShadow: "rgba(54, 65, 93, 0.14)"
+    };
+
+    class DeviceSaveManager {
+      constructor(gameId) {
+        this.storageKey = `TIGALAND_SAVE_${gameId}_V2`;
+        this.data = this.load();
+      }
+
+      getDefaultState() {
+        return {
+          gameId: GAME_DATA.gameId,
+          totalXP: 0,
+          totalCoins: 0,
+          unlockedLevelIndex: 0,
+          levels: {
+            L1: { bestScore: 0, stars: 0 },
+            L2: { bestScore: 0, stars: 0 },
+            L3: { bestScore: 0, stars: 0 },
+            L4: { bestScore: 0, stars: 0 },
+            L5: { bestScore: 0, stars: 0 }
+          }
+        };
+      }
+
+      load() {
+        try {
+          const raw = window.localStorage.getItem(this.storageKey);
+          return raw ? Object.assign(this.getDefaultState(), JSON.parse(raw)) : this.getDefaultState();
+        } catch (e) {
+          return this.getDefaultState();
+        }
+      }
+
+      save() {
+        try {
+          window.localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      recordLevelCompletion(levelIndex, levelCode, score, maxScore) {
+        const ratio = score / maxScore;
+        const starsEarned = ratio >= 0.9 ? 3 : ratio >= 0.7 ? 2 : ratio >= 0.4 ? 1 : 0;
+        const lvl = this.data.levels[levelCode];
+        if (score > lvl.bestScore) lvl.bestScore = score;
+        if (starsEarned > lvl.stars) lvl.stars = starsEarned;
+
+        this.data.totalXP += score * 2;
+        this.data.totalCoins += Math.floor(score / 10);
+
+        let unlockedNext = false;
+        if (ratio >= 0.7 && levelIndex + 1 > this.data.unlockedLevelIndex && levelIndex + 1 < 5) {
+          this.data.unlockedLevelIndex = levelIndex + 1;
+          unlockedNext = true;
+        }
+        this.save();
+        return { starsEarned, xpEarned: score * 2, coinsEarned: Math.floor(score / 10), unlockedNext };
+      }
+    }
+
+    class AudioManager {
+      constructor() {
+        this.muted = false;
+        this.ctx = null;
+      }
+      init() {
+        if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (this.ctx && this.ctx.state === "suspended") this.ctx.resume().catch(() => {});
+      }
+      playTone(freq, type = "sine", duration = 0.18, delay = 0, gainVal = 0.18) {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+        try {
+          const now = this.ctx.currentTime + delay;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.exponentialRampToValueAtTime(gainVal, now + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        } catch (e) {}
+      }
+      playTap() { this.playTone(520, "triangle", 0.09, 0, 0.12); }
+      playCorrect() {
+        this.playTone(523.25, "sine", 0.16, 0.00, 0.18);
+        this.playTone(659.25, "sine", 0.16, 0.10, 0.18);
+        this.playTone(783.99, "sine", 0.26, 0.20, 0.20);
+      }
+      playGentleTryAgain() {
+        this.playTone(392.00, "triangle", 0.16, 0.00, 0.14);
+        this.playTone(349.23, "triangle", 0.22, 0.12, 0.14);
+      }
+      playFanfare() {
+        [523.25, 659.25, 783.99, 1046.50].forEach((n, idx) => {
+          this.playTone(n, "triangle", 0.28, idx * 0.11, 0.2);
+        });
+      }
+    }
+
+    class QuestionManager {
+      constructor(questions) {
+        this.rawQuestions = questions;
+        this.reset(questions);
+      }
+      shuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+      reset(questions) {
+        this.rawQuestions = questions;
+        this.currentIndex = 0;
+        this.prepared = this.rawQuestions.map((q) => {
+          const chosenDist = this.shuffle(q.distractors).slice(0, 2);
+          const options = this.shuffle([q.answer, ...chosenDist]);
+          return { ...q, options };
+        });
+      }
+      getCurrent() { return this.prepared[this.currentIndex] || null; }
+      advance() { this.currentIndex++; return this.currentIndex < this.prepared.length; }
+      getProgress() { return { current: Math.min(this.currentIndex + 1, this.prepared.length), total: this.prepared.length }; }
+    }
+
+    class BM001Engine {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext("2d");
+        this.audio = new AudioManager();
+        this.saveMgr = new DeviceSaveManager(GAME_DATA.gameId);
+
+        this.selectedLevelIndex = 0;
+        this.qManager = new QuestionManager(GAME_DATA.levels[0].questions);
+        this.state = "LEVEL_SELECT";
+        this.buttons = [];
+        this.particles = [];
+        this.clouds = [
+          { x: 0.15, y: 0.14, scale: 1.0, speed: 0.008 },
+          { x: 0.55, y: 0.09, scale: 0.75, speed: 0.005 },
+          { x: 0.85, y: 0.18, scale: 1.1, speed: 0.007 }
+        ];
+
+        this.score = 0;
+        this.feedback = { text: "", subtext: "", color: BRAND.teal, timer: 0 };
+        this.cardAnimations = [
+          { scale: 1, shake: 0, status: "idle" },
+          { scale: 1, shake: 0, status: "idle" },
+          { scale: 1, shake: 0, status: "idle" }
+        ];
+        this.mascotBounce = 0;
+        this.lastTime = 0;
+
+        window.addEventListener("resize", () => this.resize());
+        this.canvas.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          this.audio.init();
+          const rect = this.canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left, y = e.clientY - rect.top;
+          for (let i = this.buttons.length - 1; i >= 0; i--) {
+            const btn = this.buttons[i];
+            if (x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h && !btn.disabled) {
+              btn.onClick();
+              break;
+            }
+          }
+        });
+        this.resize();
+      }
+
+      showToast(msg) {
+        const t = document.getElementById("overlay-toast");
+        if (!t) return;
+        t.textContent = msg;
+        t.classList.add("visible");
+        clearTimeout(this._tm);
+        this._tm = setTimeout(() => t.classList.remove("visible"), 3000);
+      }
+
+      resize() {
+        this.width = window.innerWidth;
+        this.height = window.innerHeight;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.canvas.width = this.width * dpr;
+        this.canvas.height = this.height * dpr;
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      start() {
+        this.lastTime = performance.now();
+        const loop = (now) => {
+          const dt = Math.min((now - this.lastTime) / 1000, 0.1);
+          this.lastTime = now;
+          this.update(dt);
+          this.render();
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+      }
+
+      startLevel(idx) {
+        this.audio.playTap();
+        this.selectedLevelIndex = idx;
+        const lvl = GAME_DATA.levels[idx];
+        this.qManager.reset(lvl.questions);
+        this.score = 0;
+        this.resetCards();
+        this.state = "PLAYING";
+      }
+
+      resetCards() {
+        this.cardAnimations = [
+          { scale: 1, shake: 0, status: "idle" },
+          { scale: 1, shake: 0, status: "idle" },
+          { scale: 1, shake: 0, status: "idle" }
+        ];
+        this.feedback = { text: "", subtext: "", color: BRAND.teal, timer: 0 };
+      }
+
+      spawnConfetti(cx, cy, count = 30) {
+        const cols = [BRAND.purple, BRAND.orange, BRAND.teal, BRAND.yellow, BRAND.pink, BRAND.green];
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2, speed = 110 + Math.random() * 240;
+          this.particles.push({
+            x: cx, y: cy, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 120,
+            size: 7 + Math.random() * 7, color: cols[i % cols.length], life: 1.2, maxLife: 1.4, rot: Math.random() * Math.PI
+          });
+        }
+      }
+
+      handleSelect(idx, val, center) {
+        if (this.state !== "PLAYING") return;
+        const q = this.qManager.getCurrent();
+        if (!q) return;
+
+        const isCorrect = val === q.answer;
+        if (isCorrect) {
+          this.audio.playCorrect();
+          this.score += GAME_DATA.pointsPerQuestion;
+          this.cardAnimations[idx].status = "correct";
+          this.cardAnimations[idx].scale = 1.1;
+          this.feedback = { text: `Betul! Jawapan: ${q.answer}`, subtext: "+10 Markah", color: BRAND.tealDark, timer: 1.1 };
+          this.spawnConfetti(center.x, center.y, 32);
+          this.state = "FEEDBACK_WAIT";
+        } else {
+          this.audio.playGentleTryAgain();
+          this.cardAnimations[idx].status = "wrong";
+          this.cardAnimations[idx].shake = 0.45;
+          this.feedback = { text: `Bukan ${val}. Cuba lagi!`, subtext: "Cuba semak", color: BRAND.orangeDark, timer: 1.2 };
+        }
+      }
+
+      update(dt) {
+        this.mascotBounce += dt * 3.2;
+        this.clouds.forEach(c => { c.x += c.speed * dt; if (c.x > 1.15) c.x = -0.15; });
+        this.cardAnimations.forEach(a => { a.scale += (1 - a.scale) * Math.min(dt * 10, 1); if (a.shake > 0) a.shake = Math.max(0, a.shake - dt); });
+
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 420 * dt; p.rot += 5 * dt; p.life -= dt;
+          if (p.life <= 0) this.particles.splice(i, 1);
+        }
+
+        if (this.feedback.timer > 0) {
+          this.feedback.timer -= dt;
+          if (this.feedback.timer <= 0 && this.state === "FEEDBACK_WAIT") {
+            const hasMore = this.qManager.advance();
+            if (hasMore) {
+              this.resetCards();
+              this.state = "PLAYING";
+            } else {
+              const lvl = GAME_DATA.levels[this.selectedLevelIndex];
+              const maxScore = lvl.questions.length * GAME_DATA.pointsPerQuestion;
+              this.lastReward = this.saveMgr.recordLevelCompletion(this.selectedLevelIndex, lvl.code, this.score, maxScore);
+              this.state = "SUMMARY";
+              this.audio.playFanfare();
+              this.spawnConfetti(this.width * 0.5, this.height * 0.35, 50);
+              this.showToast("Kemajuan BM001 disimpan automatik dalam gadget!");
+            }
+          }
+        }
+      }
+
+      roundRect(x, y, w, h, r, fill, stroke = null, lw = 3) {
+        const ctx = this.ctx, rad = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + rad, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rad);
+        ctx.arcTo(x + w, y + h, x, y + h, rad);
+        ctx.arcTo(x, y + h, x, y, rad);
+        ctx.arcTo(x, y, x + w, y, rad);
+        ctx.closePath();
+        if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+        if (stroke) { ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke(); }
+      }
+
+      drawButton(opts) {
+        const { x, y, w, h, label, bg, shadowColor, textColor = "#FFFFFF", fontSize = 20, onClick, disabled = false } = opts;
+        this.roundRect(x, y + 5, w, h, 20, shadowColor || BRAND.navy);
+        this.roundRect(x, y, w, h, 20, bg);
+        this.ctx.fillStyle = textColor;
+        this.ctx.font = `800 ${fontSize}px "Trebuchet MS", sans-serif`;
+        this.ctx.textAlign = "center"; this.ctx.textBaseline = "middle";
+        this.ctx.fillText(label, x + w / 2, y + h / 2 + 1);
+        if (onClick) this.buttons.push({ x, y, w, h, onClick, disabled });
+      }
+
+      drawBackground() {
+        const ctx = this.ctx, w = this.width, h = this.height;
+        ctx.fillStyle = "#F4E5CE";
+        ctx.beginPath();
+        ctx.moveTo(0, h * 0.84);
+        ctx.quadraticCurveTo(w * 0.25, h * 0.77, w * 0.55, h * 0.85);
+        ctx.quadraticCurveTo(w * 0.82, h * 0.91, w, h * 0.81);
+        ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath();
+        ctx.fill();
+
+        this.clouds.forEach(c => {
+          const cx = c.x * w, cy = c.y * h, s = c.scale * Math.min(w, h) * 0.05;
+          ctx.fillStyle = "rgba(255, 255, 255, 0.82)";
+          ctx.beginPath();
+          ctx.arc(cx, cy, s, 0, Math.PI * 2);
+          ctx.arc(cx + s * 0.85, cy - s * 0.2, s * 0.8, 0, Math.PI * 2);
+          ctx.arc(cx + s * 1.65, cy + s * 0.05, s * 0.72, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      drawTopHUD(mode) {
+        const ctx = this.ctx, pad = 12, barH = 48;
+        if (mode === "PLAY") {
+          this.roundRect(pad, pad, 128, barH, 24, BRAND.purple, "#FFF", 2.5);
+          ctx.fillStyle = "#FFF"; ctx.font = '800 16px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("◀ TAHAP", pad + 64, pad + barH / 2 + 1);
+          this.buttons.push({ x: pad, y: pad, w: 128, h: barH, onClick: () => { this.audio.playTap(); this.state = "LEVEL_SELECT"; } });
+        } else {
+          this.roundRect(pad, pad, 156, barH, 24, BRAND.purple, "#FFF", 2.5);
+          ctx.fillStyle = "#FFF"; ctx.font = '900 17px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("TIGA LAND", pad + 78, pad + barH / 2 + 1);
+        }
+
+        const soundW = 48, soundX = this.width - pad - soundW;
+        this.roundRect(soundX, pad, soundW, barH, 24, this.audio.muted ? BRAND.pink : BRAND.teal, "#FFF", 2.5);
+        ctx.fillStyle = "#FFF"; ctx.font = '800 18px "Trebuchet MS", sans-serif';
+        ctx.textAlign = "center"; ctx.fillText(this.audio.muted ? "🔇" : "🔊", soundX + soundW / 2, pad + barH / 2 + 1);
+        this.buttons.push({ x: soundX, y: pad, w: soundW, h: barH, onClick: () => { this.audio.muted = !this.audio.muted; } });
+
+        if (mode === "PLAY") {
+          const scoreW = 112, scoreX = soundX - scoreW - 8;
+          this.roundRect(scoreX, pad, scoreW, barH, 24, BRAND.yellow, "#FFF", 2.5);
+          ctx.fillStyle = BRAND.navy; ctx.font = '900 17px "Trebuchet MS", sans-serif';
+          ctx.fillText(`⭐ ${this.score}`, scoreX + scoreW / 2, pad + barH / 2 + 1);
+
+          const prog = this.qManager.getProgress();
+          const pW = Math.min(260, scoreX - (pad + 145)), pX = pad + 138, pY = pad + 9, pH = 30;
+          this.roundRect(pX, pY, pW, pH, 15, "#FFF", BRAND.purple, 2);
+          this.roundRect(pX + 4, pY + 4, Math.max(20, (pW - 8) * (prog.current / prog.total)), pH - 8, 11, BRAND.green);
+          ctx.fillStyle = BRAND.navy; ctx.font = '800 13px "Trebuchet MS", sans-serif';
+          ctx.fillText(`Soalan ${prog.current}/${prog.total}`, pX + pW / 2, pY + pH / 2 + 1);
+        }
+      }
+
+      renderLevelSelect() {
+        const ctx = this.ctx, cx = this.width / 2;
+        this.drawTopHUD("HOME");
+
+        ctx.fillStyle = BRAND.purple; ctx.font = '900 28px "Trebuchet MS", sans-serif';
+        ctx.textAlign = "left"; ctx.fillText("BM001: Kenali Huruf", cx - 110, 88);
+        ctx.fillStyle = "#5C6885"; ctx.font = '700 14px "Trebuchet MS", sans-serif';
+        ctx.fillText("Pilih tahap abjad • Auto-Simpan Aktif ✓", cx - 110, 112);
+
+        const listTop = 138, cardH = 72, cardW = Math.min(580, this.width * 0.92), startX = cx - cardW / 2;
+        GAME_DATA.levels.forEach((lvl, idx) => {
+          const y = listTop + idx * (cardH + 10);
+          const unlocked = idx <= this.saveMgr.data.unlockedLevelIndex;
+          const saved = this.saveMgr.data.levels[lvl.code];
+
+          this.roundRect(startX, y + 4, cardW, cardH, 20, unlocked ? lvl.shadow : "#B8BEC9");
+          this.roundRect(startX, y, cardW, cardH, 20, unlocked ? "#FFF" : "#EAECEF", unlocked ? lvl.color : "#C5CBD6", 3.5);
+
+          this.roundRect(startX + 12, y + 10, 62, cardH - 20, 14, unlocked ? lvl.color : "#AEB5C2");
+          ctx.fillStyle = "#FFF"; ctx.font = '900 20px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center"; ctx.fillText(lvl.code, startX + 43, y + cardH / 2 + 1);
+
+          ctx.textAlign = "left"; ctx.fillStyle = unlocked ? BRAND.navy : "#7D8597";
+          ctx.font = '800 17px "Trebuchet MS", sans-serif';
+          ctx.fillText(lvl.label, startX + 86, y + cardH * 0.38);
+          ctx.fillStyle = unlocked ? "#5C6885" : "#9AA1B0"; ctx.font = '600 13px "Trebuchet MS", sans-serif';
+          ctx.fillText(unlocked ? lvl.desc : "Tamatkan tahap sebelumnya (≥70%)", startX + 86, y + cardH * 0.72);
+
+          ctx.textAlign = "right";
+          if (unlocked) {
+            ctx.font = '800 16px "Trebuchet MS", sans-serif';
+            ctx.fillText("⭐".repeat(saved.stars) + "☆".repeat(3 - saved.stars), startX + cardW - 16, y + cardH * 0.42);
+            ctx.fillStyle = lvl.shadow; ctx.font = '800 13px "Trebuchet MS", sans-serif';
+            ctx.fillText(saved.bestScore > 0 ? `Terbaik: ${saved.bestScore}` : "MULA ▶", startX + cardW - 16, y + cardH * 0.74);
+            this.buttons.push({ x: startX, y, w: cardW, h: cardH, onClick: () => this.startLevel(idx) });
+          } else {
+            ctx.font = '800 22px "Trebuchet MS", sans-serif';
+            ctx.fillText("🔒", startX + cardW - 20, y + cardH / 2 + 2);
+          }
+        });
+      }
+
+      renderPlay() {
+        const ctx = this.ctx, cx = this.width / 2;
+        this.drawTopHUD("PLAY");
+        const q = this.qManager.getCurrent();
+        if (!q) return;
+
+        const topOffset = 78, bannerW = Math.min(620, this.width * 0.92);
+        const bannerH = q.display ? 168 : 120;
+        const bannerX = cx - bannerW / 2;
+
+        this.roundRect(bannerX, topOffset + 5, bannerW, bannerH, 26, BRAND.cardShadow);
+        this.roundRect(bannerX, topOffset, bannerW, bannerH, 26, "#FFF", BRAND.purple, 3.5);
+
+        ctx.fillStyle = BRAND.navy; ctx.textAlign = "center";
+        if (q.display) {
+          ctx.font = '800 22px "Trebuchet MS", sans-serif';
+          ctx.fillText(q.prompt, cx, topOffset + 42);
+          ctx.fillStyle = BRAND.purple;
+          ctx.font = '900 46px "Trebuchet MS", sans-serif';
+          ctx.fillText(q.display, cx, topOffset + 112);
+        } else {
+          ctx.font = '900 32px "Trebuchet MS", sans-serif';
+          ctx.fillText(q.prompt, cx, topOffset + bannerH / 2 + 4);
+        }
+
+        const areaTop = topOffset + bannerH + 20, availH = this.height - areaTop - 80;
+        const gap = 22, cardW = Math.min(180, (Math.min(720, this.width * 0.92) - gap * 2) / 3), cardH = Math.min(190, availH * 0.82);
+        const startX = cx - (cardW * 3 + gap * 2) / 2, cardY = areaTop + (availH - cardH) / 2;
+
+        q.options.forEach((val, idx) => {
+          const anim = this.cardAnimations[idx];
+          const shakeX = anim.shake > 0 ? Math.sin(anim.shake * 48) * 9 : 0;
+          const baseX = startX + idx * (cardW + gap) + shakeX;
+
+          let style = { bg: "#FFF", border: BRAND.teal, shadow: BRAND.tealDark };
+          if (idx === 1) style = { bg: "#FFF", border: BRAND.orange, shadow: BRAND.orangeDark };
+          if (idx === 2) style = { bg: "#FFF", border: BRAND.pink, shadow: BRAND.pinkDark };
+
+          if (anim.status === "correct") style = { bg: BRAND.green, border: BRAND.tealDark, shadow: BRAND.greenDark };
+
+          ctx.save();
+          const midX = baseX + cardW / 2, midY = cardY + cardH / 2;
+          ctx.translate(midX, midY); ctx.scale(anim.scale, anim.scale); ctx.translate(-midX, -midY);
+
+          this.roundRect(baseX, cardY + 7, cardW, cardH, 26, style.shadow);
+          this.roundRect(baseX, cardY, cardW, cardH, 26, style.bg, style.border, 4.5);
+
+          ctx.fillStyle = anim.status === "correct" ? "#FFF" : BRAND.navy;
+          ctx.font = '900 68px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText(val, midX, midY + 4);
+          ctx.restore();
+
+          this.buttons.push({
+            x: baseX, y: cardY, w: cardW, h: cardH,
+            disabled: this.state !== "PLAYING" || anim.status === "wrong",
+            onClick: () => this.handleSelect(idx, val, { x: midX, y: midY })
+          });
+        });
+
+        if (this.feedback.text) {
+          const fbW = Math.min(520, this.width * 0.92);
+          this.roundRect(cx - fbW / 2, this.height - 64, fbW, 48, 24, this.feedback.color, "#FFF", 2.5);
+          ctx.fillStyle = "#FFF"; ctx.font = '800 16px "Trebuchet MS", sans-serif';
+          ctx.fillText(`${this.feedback.text} (${this.feedback.subtext})`, cx, this.height - 40);
+        }
+      }
+
+      renderSummary() {
+        const ctx = this.ctx, cx = this.width / 2, cy = this.height / 2;
+        this.drawTopHUD("PLAY");
+        const lvl = GAME_DATA.levels[this.selectedLevelIndex];
+        const maxScore = lvl.questions.length * GAME_DATA.pointsPerQuestion;
+        const rew = this.lastReward || { starsEarned: 0, xpEarned: 0, coinsEarned: 0, unlockedNext: false };
+
+        const cardW = Math.min(520, this.width * 0.92), cardH = 430, cardX = cx - cardW / 2, cardY = cy - cardH / 2 + 15;
+        this.roundRect(cardX, cardY + 8, cardW, cardH, 32, BRAND.cardShadow);
+        this.roundRect(cardX, cardY, cardW, cardH, 32, "#FFF", BRAND.teal, 4.5);
+
+        ctx.fillStyle = BRAND.tealDark; ctx.font = '900 28px "Trebuchet MS", sans-serif';
+        ctx.textAlign = "center"; ctx.fillText("Tahniah! Syabas!", cx, cardY + 54);
+
+        ctx.font = '800 32px "Trebuchet MS", sans-serif';
+        ctx.fillText("⭐".repeat(rew.starsEarned) + "☆".repeat(3 - rew.starsEarned), cx, cardY + 100);
+
+        const boxW = cardW * 0.84, boxH = 96, boxX = cx - boxW / 2, boxY = cardY + 124;
+        this.roundRect(boxX, boxY, boxW, boxH, 20, BRAND.cream, BRAND.yellow, 2.5);
+        ctx.fillStyle = BRAND.purple; ctx.font = '900 28px "Trebuchet MS", sans-serif';
+        ctx.fillText(`Skor: ${this.score} / ${maxScore}`, cx, boxY + 36);
+        ctx.fillStyle = BRAND.navy; ctx.font = '700 14px "Trebuchet MS", sans-serif';
+        ctx.fillText(`+${rew.xpEarned} XP • +${rew.coinsEarned} Syiling • Auto-Simpan ✓`, cx, boxY + 68);
+
+        const btnW = 280;
+        this.drawButton({
+          x: cx - btnW / 2, y: boxY + boxH + 18, w: btnW, h: 52,
+          label: "MAIN SEMULA ↻", bg: BRAND.orange, shadowColor: BRAND.orangeDark, fontSize: 18,
+          onClick: () => this.startLevel(this.selectedLevelIndex)
+        });
+        this.drawButton({
+          x: cx - btnW / 2, y: boxY + boxH + 78, w: btnW, h: 48,
+          label: "PILIH TAHAP LAIN", bg: BRAND.purple, shadowColor: BRAND.purpleDark, fontSize: 16,
+          onClick: () => { this.state = "LEVEL_SELECT"; }
+        });
+      }
+
+      render() {
+        this.buttons = [];
+        this.ctx.clearRect(0, 0, this.width, this.height);
+        this.drawBackground();
+
+        if (this.state === "LEVEL_SELECT") this.renderLevelSelect();
+        else if (this.state === "PLAYING" || this.state === "FEEDBACK_WAIT") this.renderPlay();
+        else if (this.state === "SUMMARY") this.renderSummary();
+
+        this.particles.forEach(p => {
+          this.ctx.save(); this.ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
+          this.ctx.translate(p.x, p.y); this.ctx.rotate(p.rot);
+          this.ctx.fillStyle = p.color; this.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+          this.ctx.restore();
+        });
+      }
+    }
+
+    window.addEventListener("load", () => new BM001Engine("tiga-canvas").start());
+  </script>
+</body>
+</html>

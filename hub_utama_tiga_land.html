@@ -1,0 +1,438 @@
+<!-- ... existing code ... -->
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TIGA LAND — Play. Explore. Master 3M.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+    body { font-family: 'Fredoka', sans-serif; background-color: #FFF5E6; color: #36415D; }
+    .tiga-card { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease; }
+    .tiga-card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(54,65,93,0.15); }
+    .tiga-card:active { transform: scale(0.97); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[radial-gradient(circle_at_top,_#FFFDF9_0%,_#FFF5E6_75%,_#FDEBD0_100%)]">
+
+  <!-- Top Header Navigation -->
+  <header class="bg-[#6B58A5] text-white shadow-lg sticky top-0 z-50 px-4 py-3">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <div class="bg-[#F2A45A] text-white px-3 py-1.5 rounded-2xl font-black text-xl shadow-md">TIGA LAND</div>
+        <span class="hidden sm:inline text-sm font-semibold opacity-90">Dunia Kecil, Ilmu Besar!</span>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div id="active-profile-badge" onclick="openProfileSelectorModal()" class="bg-[#F5D56B] text-[#36415D] px-3.5 py-1.5 rounded-full font-extrabold text-sm shadow flex items-center space-x-2 cursor-pointer hover:scale-105 transition">
+          <span id="nav-avatar" class="text-lg">👦</span>
+          <span id="nav-child-name">Ali</span>
+          <span id="nav-child-age" class="text-xs opacity-75">(6 Thn)</span>
+          <span class="text-xs bg-white/50 px-1.5 py-0.5 rounded-full ml-1">▼</span>
+        </div>
+        <div class="bg-[#62B9A5] px-3.5 py-1.5 rounded-full text-white font-bold text-sm shadow">
+          ⭐ <span id="nav-total-xp">1,420</span> XP
+        </div>
+        <button onclick="openParentModal()" class="bg-white text-[#36415D] hover:bg-gray-100 font-bold px-3.5 py-1.5 rounded-2xl text-sm shadow flex items-center space-x-1.5">
+          <span>⚙️ Ibu Bapa</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Banner -->
+  <section class="max-w-6xl w-full mx-auto p-4 md:p-8 text-center my-2">
+    <div class="bg-gradient-to-r from-[#62B9A5] to-[#8EB55B] text-white rounded-3xl p-8 shadow-xl relative overflow-hidden">
+      <div class="absolute -right-10 -bottom-10 text-9xl opacity-20">🚀</div>
+      <h1 class="text-3xl md:text-5xl font-black mb-3">Play. Explore. Master 3M.</h1>
+      <p class="text-lg md:text-xl font-medium max-w-2xl mx-auto opacity-95 mb-6">
+        Platform permainan edukatif standard prasekolah & rendah untuk anak-anak Malaysia berumur 4–7 tahun! 100% interaktif dan boleh dimainkan di mana sahaja.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3">
+        <button onclick="scrollToCategories()" class="bg-[#F2A45A] hover:bg-[#D68438] text-white font-black px-6 py-3 rounded-2xl shadow-lg transition transform active:scale-95 text-lg">
+          🎮 Pilih Kategori Game
+        </button>
+        <button onclick="window.location.href='BM001_Kenali_Huruf.html'" class="bg-white text-[#6B58A5] hover:bg-gray-50 font-black px-6 py-3 rounded-2xl shadow-lg transition transform active:scale-95 text-lg">
+          ▶ Main BM001 Sekarang
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game Categories Grid -->
+  <main id="categories-section" class="max-w-6xl w-full mx-auto p-4 md:p-8 flex-1">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl md:text-3xl font-black text-[#36415D]">📚 Katalog Subjek (300 Game)</h2>
+      <span class="text-sm font-bold bg-[#F5D56B] text-[#36415D] px-3 py-1 rounded-full shadow-sm">5 Tahap Kognitif (L1–L5)</span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Bahasa Melayu (Terus Buka BM001) -->
+      <div onclick="window.location.href='BM001_Kenali_Huruf.html'" class="tiga-card bg-white rounded-3xl p-6 shadow-xl border-4 border-[#6B58A5] cursor-pointer">
+        <div class="w-14 h-14 bg-[#6B58A5] text-white rounded-2xl flex items-center justify-center text-2xl mb-4 shadow">📖</div>
+        <h3 class="text-xl font-black text-[#36415D] mb-1">Bahasa Melayu</h3>
+        <p class="text-xs font-bold text-[#6B58A5] mb-3">BM001 – BM090 (90 Game)</p>
+        <p class="text-sm text-gray-600 mb-4">Prabacaan, kenal huruf, vokal, konsonan, suku kata KV, KVK, digraf & tatabahasa asas.</p>
+        <div class="flex justify-between items-center text-xs font-bold text-gray-500 pt-3 border-t border-gray-100">
+          <span>Status: Aktif ✓</span>
+          <span class="text-[#6B58A5]">Main Sekarang ▶</span>
+        </div>
+      </div>
+
+      <!-- Matematik -->
+      <div onclick="openCategoryModal('Matematik', 'MATH001–MATH075', 75)" class="tiga-card bg-white rounded-3xl p-6 shadow-xl border-4 border-[#F2A45A] cursor-pointer">
+        <div class="w-14 h-14 bg-[#F2A45A] text-white rounded-2xl flex items-center justify-center text-2xl mb-4 shadow">🔢</div>
+        <h3 class="text-xl font-black text-[#36415D] mb-1">Matematik</h3>
+        <p class="text-xs font-bold text-[#F2A45A] mb-3">MATH001 – MATH075 (75 Game)</p>
+        <p class="text-sm text-gray-600 mb-4">Nombor 1-100, operasi tambah & tolak asas, bentuk geometri 2D/3D & nilai wang Malaysia.</p>
+        <div class="flex justify-between items-center text-xs font-bold text-gray-500 pt-3 border-t border-gray-100">
+          <span>Status: Sedia 🏗️</span>
+          <span class="text-[#F2A45A]">Pilih Game →</span>
+        </div>
+      </div>
+
+      <!-- Menulis -->
+      <div onclick="openCategoryModal('Menulis', 'WRITE001–WRITE045', 45)" class="tiga-card bg-white rounded-3xl p-6 shadow-xl border-4 border-[#62B9A5] cursor-pointer">
+        <div class="w-14 h-14 bg-[#62B9A5] text-white rounded-2xl flex items-center justify-center text-2xl mb-4 shadow">✍️</div>
+        <h3 class="text-xl font-black text-[#36415D] mb-1">Menulis</h3>
+        <p class="text-xs font-bold text-[#62B9A5] mb-3">WRITE001 – WRITE045 (45 Game)</p>
+        <p class="text-sm text-gray-600 mb-4">Latihan kawalan motor halus, surihan garisan, menulis huruf besar/kecil & nombor terarah.</p>
+        <div class="flex justify-between items-center text-xs font-bold text-gray-500 pt-3 border-t border-gray-100">
+          <span>Status: Sedia 🏗️</span>
+          <span class="text-[#62B9A5]">Pilih Game →</span>
+        </div>
+      </div>
+
+      <!-- English -->
+      <div onclick="openCategoryModal('English', 'EN001–EN035', 35)" class="tiga-card bg-white rounded-3xl p-6 shadow-xl border-4 border-[#F3A5AD] cursor-pointer">
+        <div class="w-14 h-14 bg-[#F3A5AD] text-white rounded-2xl flex items-center justify-center text-2xl mb-4 shadow">🔤</div>
+        <h3 class="text-xl font-black text-[#36415D] mb-1">English</h3>
+        <p class="text-xs font-bold text-[#D47B84] mb-3">EN001 – EN035 (35 Game)</p>
+        <p class="text-sm text-gray-600 mb-4">Phonics, sight words, simple vocabulary building, listening comprehension & spelling practice.</p>
+        <div class="flex justify-between items-center text-xs font-bold text-gray-500 pt-3 border-t border-gray-100">
+          <span>Status: Sedia 🏗️</span>
+          <span class="text-[#D47B84]">Pilih Game →</span>
+        </div>
+      </div>
+
+      <!-- Sains -->
+      <div onclick="openCategoryModal('Sains', 'SCI001–SCI025', 25)" class="tiga-card bg-white rounded-3xl p-6 shadow-xl border-4 border-[#8EB55B] cursor-pointer">
+        <div class="w-14 h-14 bg-[#8EB55B] text-white rounded-2xl flex items-center justify-center text-2xl mb-4 shadow">🌱</div>
+        <h3 class="text-xl font-black text-[#36415D] mb-1">Sains</h3>
+        <p class="text-xs font-bold text-[#6D913F] mb-3">SCI001 – SCI025 (25 Game)</p>
+        <p class="text-sm text-gray-600 mb-4">Benda hidup & bukan hidup, anggota badan, 5 deria manusia, tumbuhan & alam sekitar kita.</p>
+        <div class="flex justify-between items-center text-xs font-bold text-gray-500 pt-3 border-t border-gray-100">
+          <span>Status: Sedia 🏗️</span>
+          <span class="text-[#6D913F]">Pilih Game →</span>
+        </div>
+      </div>
+
+      <!-- Logik & Kreativiti -->
+      <div onclick="openCategoryModal('Logik & Kreativiti', 'LOG001–LOG030', 30)" class="tiga-card bg-white rounded-3xl p-6 shadow-xl border-4 border-[#F5D56B] cursor-pointer">
+        <div class="w-14 h-14 bg-[#F5D56B] text-[#36415D] rounded-2xl flex items-center justify-center text-2xl mb-4 shadow font-bold">🧩</div>
+        <h3 class="text-xl font-black text-[#36415D] mb-1">Logik & Kreativiti</h3>
+        <p class="text-xs font-bold text-[#D8B342] mb-3">LOG001 – LOG030 (30 Game)</p>
+        <p class="text-sm text-gray-600 mb-4">Corak siri, teka silang kata mudah, mazes, memori kad terbalik & studio warna interaktif.</p>
+        <div class="flex justify-between items-center text-xs font-bold text-gray-500 pt-3 border-t border-gray-100">
+          <span>Status: Sedia 🏗️</span>
+          <span class="text-[#D8B342]">Pilih Game →</span>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center p-6 text-xs text-gray-500 border-t border-gray-200 mt-12">
+    <p class="font-bold text-[#36415D] mb-1">TIGA LAND — Master Technical Development Platform</p>
+    <p>Setiap game beroperasi secara bebas (*standalone*) luar talian dengan sokongan Auto-Simpan & Sokongan Pelbagai Profil Kanak-Kanak.</p>
+  </footer>
+
+  <!-- Profile Selector & Creator Modal -->
+  <div id="profile-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-4 border-[#F2A45A] transform transition-all">
+      
+      <!-- View 1: Select Profile -->
+      <div id="profile-selector-view">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-2xl font-black text-[#36415D]">Pilih Profil Kanak-Kanak</h3>
+          <button onclick="closeProfileModal()" class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full font-bold flex items-center justify-center text-gray-600">✕</button>
+        </div>
+        <p class="text-xs text-gray-500 font-semibold mb-4">Pilih anak yang sedang bermain atau tambah profil baharu di bawah.</p>
+        
+        <div id="profiles-list-container" class="space-y-3 max-h-56 overflow-y-auto pr-1 mb-5">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <button onclick="switchToCreateProfileView()" class="w-full bg-[#62B9A5] hover:bg-[#459683] text-white font-black py-3 rounded-2xl shadow-lg text-sm transition transform active:scale-95 flex items-center justify-center space-x-2">
+          <span>➕ Tambah Profil Anak Baharu</span>
+        </button>
+      </div>
+
+      <!-- View 2: Create Profile -->
+      <div id="profile-create-view" class="hidden">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-xl font-black text-[#36415D]">Daftar Anak Baharu</h3>
+          <button onclick="switchToSelectorView()" class="text-xs font-bold text-[#6B58A5] bg-purple-50 px-3 py-1.5 rounded-xl hover:bg-purple-100">◀ Kembali</button>
+        </div>
+        
+        <div class="text-center mb-4">
+          <div class="inline-block bg-[#FFF5E6] p-3 rounded-2xl text-4xl mb-1 shadow-inner" id="preview-avatar-box">👦</div>
+          <p class="text-xs text-gray-500 font-semibold">Pilih nama, umur & avatar comel!</p>
+        </div>
+
+        <div class="space-y-3 mb-5">
+          <div>
+            <label class="block text-xs font-bold text-[#36415D] mb-1">Nama Anak:</label>
+            <input type="text" id="input-child-name" class="w-full px-4 py-2.5 rounded-2xl border-2 border-gray-200 focus:border-[#6B58A5] outline-none font-bold text-[#36415D]" placeholder="Cth: Amirah" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#36415D] mb-1">Umur Kanak-Kanak:</label>
+            <select id="select-child-age" class="w-full px-4 py-2.5 rounded-2xl border-2 border-gray-200 focus:border-[#6B58A5] outline-none font-bold text-[#36415D] bg-white">
+              <option value="4">4 Tahun (Prasekolah Awal)</option>
+              <option value="5">5 Tahun (Prasekolah Pertengahan)</option>
+              <option value="6" selected>6 Tahun (Prasekolah Akhir / Pra-Tahun 1)</option>
+              <option value="7">7 Tahun (Tahun 1)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-[#36415D] mb-2">Pilih Avatar:</label>
+            <div class="grid grid-cols-6 gap-2" id="avatar-grid">
+              <button type="button" onclick="selectAvatar('👦')" class="avatar-option p-2 rounded-2xl bg-[#FFF5E6] hover:bg-[#F5D56B] border-2 border-[#F2A45A] text-2xl flex items-center justify-center transition">👦</button>
+              <button type="button" onclick="selectAvatar('👧')" class="avatar-option p-2 rounded-2xl bg-gray-50 hover:bg-[#F5D56B] border-2 border-gray-200 text-2xl flex items-center justify-center transition">👧</button>
+              <button type="button" onclick="selectAvatar('🐱')" class="avatar-option p-2 rounded-2xl bg-gray-50 hover:bg-[#F5D56B] border-2 border-gray-200 text-2xl flex items-center justify-center transition">🐱</button>
+              <button type="button" onclick="selectAvatar('🐰')" class="avatar-option p-2 rounded-2xl bg-gray-50 hover:bg-[#F5D56B] border-2 border-gray-200 text-2xl flex items-center justify-center transition">🐰</button>
+              <button type="button" onclick="selectAvatar('🦁')" class="avatar-option p-2 rounded-2xl bg-gray-50 hover:bg-[#F5D56B] border-2 border-gray-200 text-2xl flex items-center justify-center transition">🦁</button>
+              <button type="button" onclick="selectAvatar('🚀')" class="avatar-option p-2 rounded-2xl bg-gray-50 hover:bg-[#F5D56B] border-2 border-gray-200 text-2xl flex items-center justify-center transition">🚀</button>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="saveNewProfile()" class="w-full bg-[#62B9A5] hover:bg-[#459683] text-white font-black py-3 rounded-2xl shadow-lg text-lg transition transform active:scale-95">
+          Simpan & Mula Main! 🎮
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Category Modal -->
+  <div id="category-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border-4 border-[#6B58A5] transform transition-all">
+      <div class="flex justify-between items-center mb-4">
+        <h3 id="modal-cat-title" class="text-2xl font-black text-[#36415D]">Subjek</h3>
+        <button onclick="closeCategoryModal()" class="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full font-bold flex items-center justify-center text-gray-600">✕</button>
+      </div>
+      <p id="modal-cat-subtitle" class="text-sm font-bold text-[#6B58A5] mb-4"></p>
+      
+      <div class="space-y-3 max-h-64 overflow-y-auto pr-1 mb-6" id="modal-game-list">
+        <!-- Dynamic Game Links -->
+      </div>
+
+      <button onclick="closeCategoryModal()" class="w-full bg-[#6B58A5] hover:bg-[#524185] text-white font-bold py-3 rounded-2xl shadow">Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    let selectedAvatarSymbol = "👦";
+    let profiles = [];
+    let activeProfileId = null;
+
+    function initProfiles() {
+      try {
+        const saved = localStorage.getItem('TIGALAND_PROFILES');
+        if (saved) {
+          profiles = JSON.parse(saved);
+        }
+      } catch (e) {}
+
+      if (!profiles || profiles.length === 0) {
+        profiles = [
+          { id: 'CHILD_01', name: 'Ali', age: 6, avatar: '👦', xp: 1420 }
+        ];
+      }
+
+      try {
+        const activeId = localStorage.getItem('TIGALAND_ACTIVE_PROFILE_ID');
+        activeProfileId = activeId || profiles[0].id;
+      } catch (e) {
+        activeProfileId = profiles[0].id;
+      }
+
+      updateActiveProfileUI();
+    }
+
+    function getActiveProfile() {
+      return profiles.find(p => p.id === activeProfileId) || profiles[0];
+    }
+
+    function updateActiveProfileUI() {
+      const p = getActiveProfile();
+      
+      const nameEl = document.getElementById('nav-child-name');
+      const ageEl = document.getElementById('nav-child-age');
+      const avatarEl = document.getElementById('nav-avatar');
+      const xpEl = document.getElementById('nav-total-xp');
+
+      if (nameEl) nameEl.textContent = p.name;
+      if (ageEl) ageEl.textContent = `(${p.age} Thn)`;
+      if (avatarEl) avatarEl.textContent = p.avatar || '👦';
+      if (xpEl) xpEl.textContent = (p.xp || 0).toLocaleString();
+
+      try {
+        localStorage.setItem('TIGALAND_ACTIVE_PROFILE_ID', p.id);
+        localStorage.setItem('TIGALAND_PROFILES', JSON.stringify(profiles));
+      } catch (e) {}
+    }
+
+    function selectAvatar(symbol) {
+      selectedAvatarSymbol = symbol;
+      const prevBox = document.getElementById('preview-avatar-box');
+      if (prevBox) prevBox.textContent = symbol;
+      document.querySelectorAll('.avatar-option').forEach(btn => {
+        if (btn.textContent.includes(symbol)) {
+          btn.className = "avatar-option p-2 rounded-2xl bg-[#FFF5E6] hover:bg-[#F5D56B] border-2 border-[#F2A45A] text-2xl flex items-center justify-center transition scale-105 shadow-md";
+        } else {
+          btn.className = "avatar-option p-2 rounded-2xl bg-gray-50 hover:bg-[#F5D56B] border-2 border-gray-200 text-2xl flex items-center justify-center transition";
+        }
+      });
+    }
+
+    function openProfileSelectorModal() {
+      renderProfilesList();
+      document.getElementById('profile-selector-view').classList.remove('hidden');
+      document.getElementById('profile-create-view').classList.add('hidden');
+      document.getElementById('profile-modal').classList.remove('hidden');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('profile-modal').classList.add('hidden');
+    }
+
+    function renderProfilesList() {
+      const container = document.getElementById('profiles-list-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      profiles.forEach(p => {
+        const isActive = p.id === activeProfileId;
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-2xl border-2 flex justify-between items-center cursor-pointer transition ${isActive ? 'bg-[#FFF5E6] border-[#F2A45A] shadow-md' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}`;
+        item.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="text-3xl">${p.avatar || '👦'}</span>
+            <div>
+              <div class="font-bold text-[#36415D] text-base">${p.name} <span class="text-xs font-normal text-gray-500">(${p.age} Tahun)</span></div>
+              <div class="text-xs font-semibold text-[#62B9A5]">⭐ ${(p.xp || 0).toLocaleString()} XP</div>
+            </div>
+          </div>
+          <div>
+            ${isActive ? '<span class="text-xs font-black bg-[#F2A45A] text-white px-3 py-1 rounded-xl shadow-sm">Aktif ✓</span>' : '<span class="text-xs font-bold text-gray-400">Pilih</span>'}
+          </div>
+        `;
+        item.onclick = () => {
+          activeProfileId = p.id;
+          updateActiveProfileUI();
+          closeProfileModal();
+        };
+        container.appendChild(item);
+      });
+    }
+
+    function switchToCreateProfileView() {
+      document.getElementById('profile-selector-view').classList.add('hidden');
+      document.getElementById('profile-create-view').classList.remove('hidden');
+      const nameInput = document.getElementById('input-child-name');
+      if (nameInput) nameInput.value = '';
+      selectAvatar('👦');
+    }
+
+    function switchToSelectorView() {
+      document.getElementById('profile-create-view').classList.add('hidden');
+      document.getElementById('profile-selector-view').classList.remove('hidden');
+      renderProfilesList();
+    }
+
+    function saveNewProfile() {
+      const nameInput = document.getElementById('input-child-name');
+      const name = nameInput ? nameInput.value.trim() : '';
+      if (!name) {
+        alert("Sila masukkan nama anak terlebih dahulu.");
+        return;
+      }
+      const age = document.getElementById('select-child-age').value;
+      const newId = 'CHILD_' + Date.now();
+
+      profiles.push({
+        id: newId,
+        name: name,
+        age: parseInt(age),
+        avatar: selectedAvatarSymbol,
+        xp: 0
+      });
+
+      activeProfileId = newId;
+      updateActiveProfileUI();
+      closeProfileModal();
+    }
+
+    window.addEventListener('load', () => {
+      initProfiles();
+    });
+
+    function scrollToCategories() {
+      const catSec = document.getElementById('categories-section');
+      if (catSec) catSec.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function openCategoryModal(title, range, count) {
+      document.getElementById('modal-cat-title').textContent = title;
+      document.getElementById('modal-cat-subtitle').textContent = `Julat Game: ${range} (${count} Game)`;
+      
+      const listEl = document.getElementById('modal-game-list');
+      listEl.innerHTML = '';
+
+      if (title === 'Bahasa Melayu') {
+        const sampleGames = [
+          { id: 'BM001', name: 'Kenali Huruf (L1–L5)', file: 'BM001_Kenali_Huruf.html', desc: 'Huruf besar, kecil & urutan abjad' },
+          { id: 'BM002', name: 'Vokal & Konsonan', file: 'BM002_Vokal_Konsonan.html', desc: 'Pengelasan dua bakul interaktif' },
+          { id: 'BM003', name: 'Suku Kata KV', file: 'BM003_Suku_Kata_KV.html', desc: 'Bina perkataan suku kata terbuka' },
+          { id: 'BM004', name: 'Perkataan KVKV', file: '', desc: 'Memadankan kad ilustrasi' },
+          { id: 'BM005', name: 'Suku Kata Tertutup KVK', file: '', desc: 'Lengkapkan huruf penutup' }
+        ];
+        sampleGames.forEach(g => {
+          const btn = document.createElement('div');
+          btn.className = "p-3 rounded-2xl bg-gray-50 hover:bg-[#FFF5E6] border border-gray-200 flex justify-between items-center cursor-pointer transition";
+          btn.innerHTML = `<div><div class="font-bold text-[#36415D]">${g.id}: ${g.name}</div><div class="text-xs text-gray-500">${g.desc}</div></div><span class="text-xs font-bold ${g.file ? 'bg-[#62B9A5]' : 'bg-gray-400'} text-white px-3 py-1.5 rounded-xl shadow">${g.file ? 'Main ▶' : 'Akan Datang'}</span>`;
+          btn.onclick = () => { 
+            if (g.file && g.file.trim() !== '') {
+              window.location.href = g.file; 
+            } else {
+              alert(`Game ${g.id} (${g.name}) sedang dijadualkan dalam fasa pembangunan seterusnya.`);
+            }
+          };
+          listEl.appendChild(btn);
+        });
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.className = "p-4 text-center text-gray-500 text-sm font-semibold bg-gray-50 rounded-2xl";
+        placeholder.textContent = `Katalog ${title} (${range}) sedang dijadualkan dalam Fasa 5. Sila cuba Bahasa Melayu (BM001–BM003) dahulu!`;
+        listEl.appendChild(placeholder);
+      }
+
+      document.getElementById('category-modal').classList.remove('hidden');
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('category-modal').classList.add('hidden');
+    }
+
+    function openParentModal() {
+      window.location.href = 'TigaLand_Portal_Parent_Dashboard.html';
+    }
+  </script>
+</body>
+</html>

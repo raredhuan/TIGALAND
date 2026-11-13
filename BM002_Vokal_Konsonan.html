@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TIGA LAND — BM002: Vokal & Konsonan</title>
+  <style>
+    :root {
+      --tl-purple: #6B58A5;
+      --tl-orange: #F2A45A;
+      --tl-teal: #62B9A5;
+      --tl-yellow: #F5D56B;
+      --tl-pink: #F3A5AD;
+      --tl-cream: #FFF5E6;
+      --tl-navy: #36415D;
+      --tl-green: #B9D98C;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background-color: var(--tl-cream);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      color: var(--tl-navy); overflow: hidden;
+    }
+    canvas { display: block; width: 100%; height: 100%; touch-action: manipulation; }
+    #toast {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: var(--tl-navy); color: #FFF;
+      padding: 12px 24px; border-radius: 999px;
+      font-size: 14px; font-weight: 700;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 50; pointer-events: none;
+    }
+    #toast.visible { transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+  <canvas id="tiga-canvas"></canvas>
+  <div id="toast"></div>
+
+  <script>
+    const GAME_DATA = {
+      gameId: "BM002",
+      title: "Vokal & Konsonan",
+      mechanic: "Sorting",
+      pointsPerQuestion: 10,
+      levels: [
+        {
+          code: "L1", label: "Tahap 1: Explorer", desc: "Kelaskan huruf besar Vokal atau Konsonan",
+          color: "#62B9A5", shadow: "#459683",
+          leftBin: { id: "VOKAL", title: "HURUF VOKAL", sub: "A, E, I, O, U", color: "#6B58A5", shadow: "#524185" },
+          rightBin: { id: "KONSONAN", title: "HURUF KONSONAN", sub: "B, C, D, F, G...", color: "#F2A45A", shadow: "#D68438" },
+          questions: [
+            { id: "BM002_L1_Q01", item: "A", hint: "Huruf pertama abjad", targetBin: "VOKAL" },
+            { id: "BM002_L1_Q02", item: "B", hint: "Seperti dalam BOLA", targetBin: "KONSONAN" },
+            { id: "BM002_L1_Q03", item: "E", hint: "Seperti dalam EPAL", targetBin: "VOKAL" },
+            { id: "BM002_L1_Q04", item: "D", hint: "Seperti dalam DAUN", targetBin: "KONSONAN" },
+            { id: "BM002_L1_Q05", item: "I", hint: "Seperti dalam IKAN", targetBin: "VOKAL" },
+            { id: "BM002_L1_Q06", item: "K", hint: "Seperti dalam KUDA", targetBin: "KONSONAN" },
+            { id: "BM002_L1_Q07", item: "O", hint: "Seperti dalam OREN", targetBin: "VOKAL" },
+            { id: "BM002_L1_Q08", item: "M", hint: "Seperti dalam MATA", targetBin: "KONSONAN" },
+            { id: "BM002_L1_Q09", item: "U", hint: "Seperti dalam ULAR", targetBin: "VOKAL" },
+            { id: "BM002_L1_Q10", item: "S", hint: "Seperti dalam SUSU", targetBin: "KONSONAN" }
+          ]
+        },
+        {
+          code: "L2", label: "Tahap 2: Beginner", desc: "Kelaskan huruf kecil vokal atau konsonan",
+          color: "#F2A45A", shadow: "#D68438",
+          leftBin: { id: "VOKAL", title: "HURUF VOKAL", sub: "a, e, i, o, u", color: "#6B58A5", shadow: "#524185" },
+          rightBin: { id: "KONSONAN", title: "HURUF KONSONAN", sub: "b, c, d, g, p...", color: "#62B9A5", shadow: "#459683" },
+          questions: [
+            { id: "BM002_L2_Q01", item: "a", hint: "Huruf kecil a", targetBin: "VOKAL" },
+            { id: "BM002_L2_Q02", item: "g", hint: "Huruf kecil g", targetBin: "KONSONAN" },
+            { id: "BM002_L2_Q03", item: "e", hint: "Huruf kecil e", targetBin: "VOKAL" },
+            { id: "BM002_L2_Q04", item: "p", hint: "Huruf kecil p", targetBin: "KONSONAN" },
+            { id: "BM002_L2_Q05", item: "i", hint: "Huruf kecil i", targetBin: "VOKAL" },
+            { id: "BM002_L2_Q06", item: "r", hint: "Huruf kecil r", targetBin: "KONSONAN" },
+            { id: "BM002_L2_Q07", item: "o", hint: "Huruf kecil o", targetBin: "VOKAL" },
+            { id: "BM002_L2_Q08", item: "t", hint: "Huruf kecil t", targetBin: "KONSONAN" },
+            { id: "BM002_L2_Q09", item: "u", hint: "Huruf kecil u", targetBin: "VOKAL" },
+            { id: "BM002_L2_Q10", item: "z", hint: "Huruf kecil z", targetBin: "KONSONAN" }
+          ]
+        },
+        {
+          code: "L3", label: "Tahap 3: Builder", desc: "Perkataan bermula dengan Vokal atau Konsonan?",
+          color: "#6B58A5", shadow: "#524185",
+          leftBin: { id: "VOKAL", title: "MULA VOKAL", sub: "A, E, I, O, U", color: "#6B58A5", shadow: "#524185" },
+          rightBin: { id: "KONSONAN", title: "MULA KONSONAN", sub: "Huruf lain", color: "#F2A45A", shadow: "#D68438" },
+          questions: [
+            { id: "BM002_L3_Q01", item: "🐔 AYAM", hint: "Lihat huruf pertama: A", targetBin: "VOKAL" },
+            { id: "BM002_L3_Q02", item: "⚽ BOLA", hint: "Lihat huruf pertama: B", targetBin: "KONSONAN" },
+            { id: "BM002_L3_Q03", item: "🍎 EPAL", hint: "Lihat huruf pertama: E", targetBin: "VOKAL" },
+            { id: "BM002_L3_Q04", item: "🐘 GAJAH", hint: "Lihat huruf pertama: G", targetBin: "KONSONAN" },
+            { id: "BM002_L3_Q05", item: "🐟 IKAN", hint: "Lihat huruf pertama: I", targetBin: "VOKAL" },
+            { id: "BM002_L3_Q06", item: "🐱 KUCING", hint: "Lihat huruf pertama: K", targetBin: "KONSONAN" },
+            { id: "BM002_L3_Q07", item: "🍊 OREN", hint: "Lihat huruf pertama: O", targetBin: "VOKAL" },
+            { id: "BM002_L3_Q08", item: "🏠 RUMAH", hint: "Lihat huruf pertama: R", targetBin: "KONSONAN" },
+            { id: "BM002_L3_Q09", item: "🐍 ULAR", hint: "Lihat huruf pertama: U", targetBin: "VOKAL" },
+            { id: "BM002_L3_Q10", item: "🌸 BUNGA", hint: "Lihat huruf pertama: B", targetBin: "KONSONAN" }
+          ]
+        },
+        {
+          code: "L4", label: "Tahap 4: Challenger", desc: "Asingkan Vokal Depan (a, e, i) vs Vokal Belakang (o, u)",
+          color: "#F3A5AD", shadow: "#D47B84",
+          leftBin: { id: "AEI", title: "KUMPULAN A / E / I", sub: "Bunyi vokal a, e, i", color: "#62B9A5", shadow: "#459683" },
+          rightBin: { id: "OU", title: "KUMPULAN O / U", sub: "Bunyi vokal o, u", color: "#6B58A5", shadow: "#524185" },
+          questions: [
+            { id: "BM002_L4_Q01", item: "API", hint: "Huruf vokal awal: A", targetBin: "AEI" },
+            { id: "BM002_L4_Q02", item: "UBI", hint: "Huruf vokal awal: U", targetBin: "OU" },
+            { id: "BM002_L4_Q03", item: "IBU", hint: "Huruf vokal awal: I", targetBin: "AEI" },
+            { id: "BM002_L4_Q04", item: "OTAK", hint: "Huruf vokal awal: O", targetBin: "OU" },
+            { id: "BM002_L4_Q05", item: "EMAK", hint: "Huruf vokal awal: E", targetBin: "AEI" },
+            { id: "BM002_L4_Q06", item: "UDANG", hint: "Huruf vokal awal: U", targetBin: "OU" },
+            { id: "BM002_L4_Q07", item: "ITIK", hint: "Huruf vokal awal: I", targetBin: "AEI" },
+            { id: "BM002_L4_Q08", item: "OBOR", hint: "Huruf vokal awal: O", targetBin: "OU" },
+            { id: "BM002_L4_Q09", item: "AWAN", hint: "Huruf vokal awal: A", targetBin: "AEI" },
+            { id: "BM002_L4_Q10", item: "ULAR", hint: "Huruf vokal awal: U", targetBin: "OU" }
+          ]
+        },
+        {
+          code: "L5", label: "Tahap 5: Master", desc: "Kelaskan perkataan mengikut bunyi vokal tengah (a vs u)",
+          color: "#8EB55B", shadow: "#6D913F",
+          leftBin: { id: "VOKAL_A", title: "BUNYI 'A' (ba, ma, ka)", sub: "Contoh: BATA, MATA", color: "#F2A45A", shadow: "#D68438" },
+          rightBin: { id: "VOKAL_U", title: "BUNYI 'U' (bu, ku, su)", sub: "Contoh: BUKU, SUSU", color: "#6B58A5", shadow: "#524185" },
+          questions: [
+            { id: "BM002_L5_Q01", item: "BATA", hint: "Suku kata: BA - TA", targetBin: "VOKAL_A" },
+            { id: "BM002_L5_Q02", item: "BUKU", hint: "Suku kata: BU - KU", targetBin: "VOKAL_U" },
+            { id: "BM002_L5_Q03", item: "MATA", hint: "Suku kata: MA - TA", targetBin: "VOKAL_A" },
+            { id: "BM002_L5_Q04", item: "SUSU", hint: "Suku kata: SU - SU", targetBin: "VOKAL_U" },
+            { id: "BM002_L5_Q05", item: "KAKI", hint: "Suku kata awal: KA", targetBin: "VOKAL_A" },
+            { id: "BM002_L5_Q06", item: "KUKU", hint: "Suku kata: KU - KU", targetBin: "VOKAL_U" },
+            { id: "BM002_L5_Q07", item: "NAGA", hint: "Suku kata: NA - GA", targetBin: "VOKAL_A" },
+            { id: "BM002_L5_Q08", item: "GURU", hint: "Suku kata: GU - RU", targetBin: "VOKAL_U" },
+            { id: "BM002_L5_Q09", item: "JALA", hint: "Suku kata: JA - LA", targetBin: "VOKAL_A" },
+            { id: "BM002_L5_Q10", item: "SUDU", hint: "Suku kata: SU - DU", targetBin: "VOKAL_U" }
+          ]
+        }
+      ]
+    };
+
+    const BRAND = {
+      purple: "#6B58A5", purpleDark: "#524185",
+      orange: "#F2A45A", orangeDark: "#D68438",
+      teal: "#62B9A5", tealDark: "#459683",
+      yellow: "#F5D56B", pink: "#F3A5AD", pinkDark: "#D47B84",
+      cream: "#FFF5E6", navy: "#36415D",
+      green: "#B9D98C", greenDark: "#8EB55B"
+    };
+
+    class DeviceSaveManager {
+      constructor(gameId) {
+        this.key = `TIGALAND_SAVE_${gameId}_V2`;
+        this.data = this.load();
+      }
+      defaultData() {
+        return {
+          gameId: GAME_DATA.gameId, totalXP: 0, totalCoins: 0, unlockedLevelIndex: 0,
+          levels: {
+            L1: { bestScore: 0, stars: 0 }, L2: { bestScore: 0, stars: 0 },
+            L3: { bestScore: 0, stars: 0 }, L4: { bestScore: 0, stars: 0 },
+            L5: { bestScore: 0, stars: 0 }
+          }
+        };
+      }
+      load() {
+        try {
+          const raw = localStorage.getItem(this.key);
+          return raw ? Object.assign(this.defaultData(), JSON.parse(raw)) : this.defaultData();
+        } catch (e) { return this.defaultData(); }
+      }
+      save() {
+        try { localStorage.setItem(this.key, JSON.stringify(this.data)); return true; } catch (e) { return false; }
+      }
+      record(levelIdx, code, score, maxScore) {
+        const ratio = score / maxScore;
+        const stars = ratio >= 0.9 ? 3 : ratio >= 0.7 ? 2 : ratio >= 0.4 ? 1 : 0;
+        const lvl = this.data.levels[code];
+        if (score > lvl.bestScore) lvl.bestScore = score;
+        if (stars > lvl.stars) lvl.stars = stars;
+        const xp = score * 2;
+        const coins = Math.floor(score / 10);
+        this.data.totalXP += xp;
+        this.data.totalCoins += coins;
+        let unlockedNext = false;
+        if (ratio >= 0.7 && levelIdx + 1 > this.data.unlockedLevelIndex && levelIdx + 1 < 5) {
+          this.data.unlockedLevelIndex = levelIdx + 1;
+          unlockedNext = true;
+        }
+        this.save();
+        return { stars, xp, coins, unlockedNext };
+      }
+    }
+
+    class AudioManager {
+      constructor() { this.muted = false; this.ctx = null; }
+      tone(f, d = 0.16, delay = 0, type = "sine") {
+        if (this.muted) return;
+        if (!this.ctx && (window.AudioContext || window.webkitAudioContext)) {
+          this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (!this.ctx) return;
+        if (this.ctx.state === "suspended") this.ctx.resume().catch(() => {});
+        const t = this.ctx.currentTime + delay;
+        const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+        o.type = type; o.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.001, t);
+        g.gain.exponentialRampToValueAtTime(0.18, t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.001, t + d);
+        o.connect(g); g.connect(this.ctx.destination);
+        o.start(t); o.stop(t + d + 0.02);
+      }
+      ok() { this.tone(523.25, 0.14, 0); this.tone(659.25, 0.14, 0.09); this.tone(783.99, 0.24, 0.18); }
+      retry() { this.tone(392, 0.14, 0, "triangle"); this.tone(349.23, 0.2, 0.11, "triangle"); }
+      tap() { this.tone(520, 0.08, 0, "triangle"); }
+    }
+
+    class SortingGameEngine {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext("2d");
+        this.saveMgr = new DeviceSaveManager(GAME_DATA.gameId);
+        this.audio = new AudioManager();
+
+        this.state = "LEVEL_SELECT";
+        this.levelIdx = 0;
+        this.questions = [];
+        this.qIdx = 0;
+        this.score = 0;
+        this.buttons = [];
+        this.particles = [];
+        this.feedback = { text: "", color: BRAND.tealDark, timer: 0 };
+        this.itemAnim = { offsetX: 0, offsetY: 0, scale: 1, shake: 0 };
+        this.lastTime = 0;
+
+        window.addEventListener("resize", () => this.resize());
+        this.canvas.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          const r = this.canvas.getBoundingClientRect();
+          const x = e.clientX - r.left, y = e.clientY - r.top;
+          for (let i = this.buttons.length - 1; i >= 0; i--) {
+            const b = this.buttons[i];
+            if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h && !b.disabled) {
+              b.onClick(); break;
+            }
+          }
+        });
+        this.resize();
+      }
+
+      resize() {
+        this.w = window.innerWidth; this.h = window.innerHeight;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.canvas.width = this.w * dpr; this.canvas.height = this.h * dpr;
+        this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      toast(msg) {
+        const el = document.getElementById("toast");
+        el.textContent = msg; el.classList.add("visible");
+        clearTimeout(this._tt);
+        this._tt = setTimeout(() => el.classList.remove("visible"), 2800);
+      }
+
+      startLevel(idx) {
+        this.audio.tap();
+        this.levelIdx = idx;
+        this.questions = [...GAME_DATA.levels[idx].questions].sort(() => Math.random() - 0.5);
+        this.qIdx = 0;
+        this.score = 0;
+        this.itemAnim = { offsetX: 0, offsetY: 0, scale: 1, shake: 0 };
+        this.feedback = { text: "", color: BRAND.tealDark, timer: 0 };
+        this.state = "PLAYING";
+      }
+
+      chooseBin(binId, side) {
+        if (this.state !== "PLAYING") return;
+        const q = this.questions[this.qIdx];
+        if (!q) return;
+
+        if (binId === q.targetBin) {
+          this.audio.ok();
+          this.score += 10;
+          this.itemAnim.offsetX = side === "LEFT" ? -140 : 140;
+          this.itemAnim.offsetY = 90;
+          this.itemAnim.scale = 0.7;
+          this.feedback = { text: `Tepat! '${q.item}' masuk bakul ${binId} (+10)`, color: BRAND.tealDark, timer: 1.05 };
+          this.spawnConfetti(this.w * (side === "LEFT" ? 0.28 : 0.72), this.h * 0.65);
+          this.state = "WAIT_NEXT";
+        } else {
+          this.audio.retry();
+          this.itemAnim.shake = 0.45;
+          this.feedback = { text: `Cuba semak semula! Petunjuk: ${q.hint}`, color: BRAND.orangeDark, timer: 1.4 };
+        }
+      }
+
+      spawnConfetti(cx, cy) {
+        const cols = [BRAND.purple, BRAND.orange, BRAND.teal, BRAND.yellow, BRAND.pink, BRAND.green];
+        for (let i = 0; i < 26; i++) {
+          const a = Math.random() * Math.PI * 2, sp = 100 + Math.random() * 200;
+          this.particles.push({
+            x: cx, y: cy, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 110,
+            color: cols[i % cols.length], life: 1.0, size: 8
+          });
+        }
+      }
+
+      update(dt) {
+        if (this.itemAnim.shake > 0) this.itemAnim.shake = Math.max(0, this.itemAnim.shake - dt);
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 380 * dt; p.life -= dt;
+          if (p.life <= 0) this.particles.splice(i, 1);
+        }
+        if (this.feedback.timer > 0) {
+          this.feedback.timer -= dt;
+          if (this.feedback.timer <= 0 && this.state === "WAIT_NEXT") {
+            this.qIdx++;
+            if (this.qIdx < this.questions.length) {
+              this.itemAnim = { offsetX: 0, offsetY: 0, scale: 1, shake: 0 };
+              this.feedback.text = "";
+              this.state = "PLAYING";
+            } else {
+              const lvl = GAME_DATA.levels[this.levelIdx];
+              this.reward = this.saveMgr.record(this.levelIdx, lvl.code, this.score, lvl.questions.length * 10);
+              this.state = "SUMMARY";
+              this.toast("Auto-Simpan berjaya!");
+            }
+          }
+        }
+      }
+
+      roundRect(x, y, w, h, r, fill, stroke = null, lw = 3) {
+        const ctx = this.ctx, rad = Math.min(r, w / 2, h / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + rad, y);
+        ctx.arcTo(x + w, y, x + w, y + h, rad);
+        ctx.arcTo(x + w, y + h, x, y + h, rad);
+        ctx.arcTo(x, y + h, x, y, rad);
+        ctx.arcTo(x, y, x + w, y, rad);
+        ctx.closePath();
+        if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+        if (stroke) { ctx.lineWidth = lw; ctx.strokeStyle = stroke; ctx.stroke(); }
+      }
+
+      drawHUD(inGame) {
+        const ctx = this.ctx, pad = 14;
+        if (inGame) {
+          this.roundRect(pad, pad, 120, 46, 23, BRAND.purple, "#FFF", 2.5);
+          ctx.fillStyle = "#FFF"; ctx.font = '800 15px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("◀ TAHAP", pad + 60, pad + 24);
+          this.buttons.push({ x: pad, y: pad, w: 120, h: 46, onClick: () => { this.audio.tap(); this.state = "LEVEL_SELECT"; } });
+        } else {
+          this.roundRect(pad, pad, 150, 46, 23, BRAND.purple, "#FFF", 2.5);
+          ctx.fillStyle = "#FFF"; ctx.font = '900 16px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("TIGA LAND", pad + 75, pad + 24);
+        }
+
+        const sX = this.w - pad - 46;
+        this.roundRect(sX, pad, 46, 46, 23, this.audio.muted ? BRAND.pink : BRAND.teal, "#FFF", 2.5);
+        ctx.fillStyle = "#FFF"; ctx.font = '800 18px "Trebuchet MS", sans-serif';
+        ctx.textAlign = "center";
+        ctx.fillText(this.audio.muted ? "🔇" : "🔊", sX + 23, pad + 24);
+        this.buttons.push({ x: sX, y: pad, w: 46, h: 46, onClick: () => { this.audio.muted = !this.audio.muted; } });
+
+        if (inGame) {
+          this.roundRect(sX - 115, pad, 105, 46, 23, BRAND.yellow, "#FFF", 2.5);
+          ctx.fillStyle = BRAND.navy; ctx.font = '900 17px "Trebuchet MS", sans-serif';
+          ctx.fillText(`⭐ ${this.score}`, sX - 62, pad + 24);
+        }
+      }
+
+      render() {
+        this.buttons = [];
+        const ctx = this.ctx, cx = this.w / 2;
+        ctx.clearRect(0, 0, this.w, this.h);
+
+        if (this.state === "LEVEL_SELECT") {
+          this.drawHUD(false);
+          ctx.fillStyle = BRAND.purple; ctx.font = '900 28px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center"; ctx.fillText("BM002: Vokal & Konsonan", cx, 92);
+          ctx.fillStyle = "#5C6885"; ctx.font = '700 14px "Trebuchet MS", sans-serif';
+          ctx.fillText("Pilih bakul yang betul untuk setiap kad • Auto-Simpan Aktif ✓", cx, 118);
+
+          const cardW = Math.min(580, this.w * 0.92), cardH = Math.min(76, (this.h - 170) / 5);
+          const startX = cx - cardW / 2;
+          GAME_DATA.levels.forEach((lvl, idx) => {
+            const y = 140 + idx * (cardH + 10);
+            const unlocked = idx <= this.saveMgr.data.unlockedLevelIndex;
+            const saved = this.saveMgr.data.levels[lvl.code];
+            this.roundRect(startX, y + 4, cardW, cardH, 20, unlocked ? lvl.shadow : "#BDC3CF");
+            this.roundRect(startX, y, cardW, cardH, 20, unlocked ? "#FFF" : "#ECEEF2", unlocked ? lvl.color : "#C8CEDB", 3);
+
+            this.roundRect(startX + 12, y + 10, 60, cardH - 20, 14, unlocked ? lvl.color : "#AEB5C2");
+            ctx.fillStyle = "#FFF"; ctx.font = '900 19px "Trebuchet MS", sans-serif';
+            ctx.textAlign = "center"; ctx.fillText(lvl.code, startX + 42, y + cardH / 2 + 1);
+
+            ctx.textAlign = "left"; ctx.fillStyle = unlocked ? BRAND.navy : "#7D8597";
+            ctx.font = '800 17px "Trebuchet MS", sans-serif';
+            ctx.fillText(lvl.label, startX + 84, y + cardH * 0.38);
+            ctx.fillStyle = "#5C6885"; ctx.font = '600 13px "Trebuchet MS", sans-serif';
+            ctx.fillText(unlocked ? lvl.desc : "Tamatkan tahap sebelum (≥70%)", startX + 84, y + cardH * 0.72);
+
+            ctx.textAlign = "right";
+            if (unlocked) {
+              ctx.font = '800 16px "Trebuchet MS", sans-serif';
+              ctx.fillText("⭐".repeat(saved.stars) + "☆".repeat(3 - saved.stars), startX + cardW - 16, y + cardH * 0.42);
+              ctx.fillStyle = lvl.shadow; ctx.font = '800 13px "Trebuchet MS", sans-serif';
+              ctx.fillText(saved.bestScore > 0 ? `Terbaik: ${saved.bestScore}` : "MULA ▶", startX + cardW - 16, y + cardH * 0.74);
+              this.buttons.push({ x: startX, y, w: cardW, h: cardH, onClick: () => this.startLevel(idx) });
+            } else {
+              ctx.font = '800 22px "Trebuchet MS", sans-serif';
+              ctx.fillText("🔒", startX + cardW - 20, y + cardH / 2 + 2);
+            }
+          });
+        } else if (this.state === "PLAYING" || this.state === "WAIT_NEXT") {
+          this.drawHUD(true);
+          const lvl = GAME_DATA.levels[this.levelIdx];
+          const q = this.questions[this.qIdx];
+          if (!q) return;
+
+          ctx.fillStyle = BRAND.navy; ctx.font = '800 18px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center";
+          ctx.fillText(`Soalan ${this.qIdx + 1}/${this.questions.length} — Masukkan kad ke dalam bakul yang betul:`, cx, 92);
+
+          // Floating Item Card in Center
+          const shakeX = this.itemAnim.shake > 0 ? Math.sin(this.itemAnim.shake * 48) * 10 : 0;
+          const cardW = Math.min(280, this.w * 0.65), cardH = 135;
+          const cardX = cx - cardW / 2 + this.itemAnim.offsetX + shakeX;
+          const cardY = 122 + this.itemAnim.offsetY;
+
+          this.roundRect(cardX, cardY + 6, cardW, cardH, 26, "rgba(54,65,93,0.15)");
+          this.roundRect(cardX, cardY, cardW, cardH, 26, "#FFFFFF", BRAND.yellow, 4.5);
+          ctx.fillStyle = BRAND.navy;
+          ctx.font = `900 ${q.item.length > 3 ? 38 : 68}px "Trebuchet MS", sans-serif`;
+          ctx.fillText(q.item, cardX + cardW / 2, cardY + cardH / 2 + 2);
+
+          // Two Large Sorting Bins at Bottom
+          const binGap = 18;
+          const binW = Math.min(340, (this.w * 0.92 - binGap) / 2);
+          const binH = Math.min(185, this.h * 0.34);
+          const binY = Math.max(280, this.h - binH - 78);
+
+          const leftX = cx - binW - binGap / 2;
+          const rightX = cx + binGap / 2;
+
+          [
+            { bin: lvl.leftBin, x: leftX, side: "LEFT" },
+            { bin: lvl.rightBin, x: rightX, side: "RIGHT" }
+          ].forEach(({ bin, x, side }) => {
+            this.roundRect(x, binY + 7, binW, binH, 26, bin.shadow);
+            this.roundRect(x, binY, binW, binH, 26, bin.color, "#FFFFFF", 4);
+
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = `900 ${Math.min(22, binW * 0.085)}px "Trebuchet MS", sans-serif`;
+            ctx.fillText("📥 " + bin.title, x + binW / 2, binY + binH * 0.38);
+
+            ctx.fillStyle = "rgba(255,255,255,0.9)";
+            ctx.font = `700 ${Math.min(15, binW * 0.06)}px "Trebuchet MS", sans-serif`;
+            ctx.fillText(bin.sub, x + binW / 2, binY + binH * 0.66);
+
+            this.buttons.push({
+              x, y: binY, w: binW, h: binH,
+              disabled: this.state !== "PLAYING",
+              onClick: () => this.chooseBin(bin.id, side)
+            });
+          });
+
+          if (this.feedback.text) {
+            const fbW = Math.min(560, this.w * 0.92);
+            this.roundRect(cx - fbW / 2, this.h - 62, fbW, 48, 24, this.feedback.color, "#FFF", 2);
+            ctx.fillStyle = "#FFF"; ctx.font = '800 16px "Trebuchet MS", sans-serif';
+            ctx.fillText(this.feedback.text, cx, this.h - 38);
+          }
+        } else if (this.state === "SUMMARY") {
+          this.drawHUD(true);
+          const cardW = Math.min(500, this.w * 0.9), cardH = 380;
+          const cardX = cx - cardW / 2, cardY = this.h / 2 - cardH / 2 + 15;
+          this.roundRect(cardX, cardY, cardW, cardH, 30, "#FFF", BRAND.teal, 4.5);
+
+          ctx.fillStyle = BRAND.tealDark; ctx.font = '900 30px "Trebuchet MS", sans-serif';
+          ctx.textAlign = "center"; ctx.fillText("Syabas! Selesai!", cx, cardY + 58);
+
+          const r = this.reward || { stars: 0, xp: 0, coins: 0, unlockedNext: false };
+          ctx.font = '800 32px "Trebuchet MS", sans-serif';
+          ctx.fillText("⭐".repeat(r.stars) + "☆".repeat(3 - r.stars), cx, cardY + 106);
+
+          ctx.fillStyle = BRAND.purple; ctx.font = '900 28px "Trebuchet MS", sans-serif';
+          ctx.fillText(`Skor: ${this.score} / 100`, cx, cardY + 158);
+
+          ctx.fillStyle = BRAND.navy; ctx.font = '700 14px "Trebuchet MS", sans-serif';
+          ctx.fillText(`+${r.xp} XP • +${r.coins} Syiling • Auto-Simpan ✓`, cx, cardY + 192);
+
+          const btnW = 260;
+          this.roundRect(cx - btnW / 2, cardY + 230, btnW, 54, 20, BRAND.orange, "#FFF", 2);
+          ctx.fillStyle = "#FFF"; ctx.font = '800 19px "Trebuchet MS", sans-serif';
+          ctx.fillText("MAIN SEMULA ↻", cx, cardY + 258);
+          this.buttons.push({ x: cx - btnW / 2, y: cardY + 230, w: btnW, h: 54, onClick: () => this.startLevel(this.levelIdx) });
+
+          this.roundRect(cx - btnW / 2, cardY + 298, btnW, 50, 20, BRAND.purple, "#FFF", 2);
+          ctx.fillStyle = "#FFF"; ctx.font = '800 17px "Trebuchet MS", sans-serif';
+          ctx.fillText("PILIH TAHAP LAIN", cx, cardY + 324);
+          this.buttons.push({ x: cx - btnW / 2, y: cardY + 298, w: btnW, h: 50, onClick: () => { this.state = "LEVEL_SELECT"; } });
+        }
+
+        this.particles.forEach((p) => {
+          ctx.save(); ctx.globalAlpha = Math.max(0, p.life); ctx.fillStyle = p.color;
+          ctx.fillRect(p.x, p.y, p.size, p.size); ctx.restore();
+        });
+      }
+
+      start() {
+        const loop = (now) => {
+          const dt = Math.min((now - this.lastTime) / 1000, 0.1);
+          this.lastTime = now;
+          this.update(dt);
+          this.render();
+          requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+      }
+    }
+
+    window.addEventListener("load", () => new SortingGameEngine("tiga-canvas").start());
+  </script>
+</body>
+</html>
